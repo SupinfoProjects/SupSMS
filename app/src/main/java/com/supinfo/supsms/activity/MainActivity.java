@@ -77,6 +77,15 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor> {
                 backupMessages();
             }
         });
+
+        // Logout
+        Button logoutButton = (Button) findViewById(R.id.logout);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openLoginActivity();
+            }
+        });
     }
 
     private void openAboutActivity() {
@@ -94,6 +103,11 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor> {
         showProgress(true);
         mBackupMessagesTask = new BackupMessagesTask();
         mBackupMessagesTask.execute((Void) null);
+    }
+
+    private void openLoginActivity() {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
