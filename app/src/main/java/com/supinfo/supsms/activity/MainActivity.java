@@ -3,7 +3,6 @@ package com.supinfo.supsms.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
 import android.content.Loader;
@@ -13,7 +12,9 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -34,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class MainActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class MainActivity extends ActionBarActivity implements LoaderCallbacks<Cursor> {
 
     private BackupContactsTask mBackupContactsTask = null;
     private BackupMessagesTask mBackupMessagesTask = null;
@@ -86,6 +87,13 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor> {
                 openLoginActivity();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     private void openAboutActivity() {
@@ -389,6 +397,3 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
     }
 }
-
-
-
