@@ -13,6 +13,9 @@
     <string name="backup_contacts_empty">You have no contacts !</string>
     <string name="backup_contacts_one">1 contact saved.</string>
     <string name="backup_contacts_many">" contacts saved."</string>
+    <string name="backup_messages_empty">You have no messages !</string>
+    <string name="backup_messages_one">1 message saved.</string>
+    <string name="backup_messages_many">" messages saved."</string>
     <string name="backup_error">An error occurred.</string>
 
 </resources>

@@ -8,6 +8,7 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,12 +29,15 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     private BackupContactsTask mBackupContactsTask = null;
+    private BackupMessagesTask mBackupMessagesTask = null;
 
     // UI references.
     private View mProgressView;
@@ -64,6 +68,15 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor> {
                 backupContacts();
             }
         });
+
+        // Messages
+        Button messagesButton = (Button) findViewById(R.id.messages);
+        messagesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                backupMessages();
+            }
+        });
     }
 
     private void openAboutActivity() {
@@ -75,6 +88,12 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor> {
         showProgress(true);
         mBackupContactsTask = new BackupContactsTask();
         mBackupContactsTask.execute((Void) null);
+    }
+
+    private void backupMessages() {
+        showProgress(true);
+        mBackupMessagesTask = new BackupMessagesTask();
+        mBackupMessagesTask.execute((Void) null);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
@@ -255,6 +274,103 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor> {
         @Override
         protected void onCancelled() {
             mBackupContactsTask = null;
+            showProgress(false);
+        }
+    }
+
+    public class BackupMessagesTask extends AsyncTask<Void, Void, Boolean> {
+
+        private static final String ACTION = "backupsms";
+        private int savedMessages = 0;
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            List<String> boxes = new ArrayList<>();
+            boxes.add("inbox");
+            boxes.add("sent");
+
+            boolean success = true;
+
+            for (String box : boxes) {
+                List<Map<String, String>> messages = new ArrayList<>();
+
+                Cursor cursor = getContentResolver().query(
+                    Uri.parse("content://sms/" + box), null, null, null, null
+                );
+
+                while (cursor.moveToNext()) {
+                    Map<String, String> message = new HashMap<>();
+
+                    for (int id = 0; id < cursor.getColumnCount(); id++) {
+                        message.put(cursor.getColumnName(id), cursor.getString(id));
+                    }
+
+                    messages.add(message);
+                }
+
+                if (!messages.isEmpty()) {
+                    // call the API
+                    List<NameValuePair> parameters = new ArrayList<>(5);
+                    Gson gson = new Gson();
+
+                    parameters.add(new BasicNameValuePair("action", ACTION));
+                    parameters.add(new BasicNameValuePair("login", Properties.getInstance().getUser().getUsername()));
+                    parameters.add(new BasicNameValuePair("password", Properties.getInstance().getUser().getPassword()));
+                    parameters.add(new BasicNameValuePair("box", box));
+                    parameters.add(new BasicNameValuePair("sms", gson.toJson(messages)));
+
+                    Log.d("debug", gson.toJson(messages));
+                    Response result = RequestSender.sendRequest(parameters, Response.class);
+
+                    if (result.isSuccess()) {
+                        savedMessages += messages.size();
+                    } else {
+                        success = false;
+                    }
+                }
+            }
+
+            return success;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mBackupMessagesTask = null;
+            showProgress(false);
+
+            if (success) {
+                String message;
+
+                switch (savedMessages) {
+                    case 0:
+                        message = getString(R.string.backup_messages_empty);
+                        break;
+
+                    case 1:
+                        message = getString(R.string.backup_messages_one);
+                        break;
+
+                    default:
+                        message = savedMessages + getString(R.string.backup_messages_many);
+                }
+
+                Toast.makeText(
+                    getApplicationContext(),
+                    message,
+                    Toast.LENGTH_LONG
+                ).show();
+            } else {
+                Toast.makeText(
+                    getApplicationContext(),
+                    getString(R.string.backup_error),
+                    Toast.LENGTH_LONG
+                ).show();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mBackupMessagesTask = null;
             showProgress(false);
         }
     }
