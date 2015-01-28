@@ -1,6 +1,4 @@
-package com.supinfo.supsms;
-
-import android.util.Log;
+package com.supinfo.supsms.tools;
 
 import com.google.gson.Gson;
 

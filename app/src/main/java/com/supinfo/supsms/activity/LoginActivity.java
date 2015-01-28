@@ -1,17 +1,17 @@
-package com.supinfo.supsms;
+package com.supinfo.supsms.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,7 +20,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.supinfo.supsms.entity.User;
+import com.supinfo.supsms.R;
+import com.supinfo.supsms.tools.RequestSender;
 import com.supinfo.supsms.response.LoginResponse;
 
 import org.apache.http.NameValuePair;
@@ -180,16 +181,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             parameters.add(new BasicNameValuePair("password", mPassword));
 
             RequestSender requestSender = new RequestSender();
-
             LoginResponse result = requestSender.sendRequest(parameters, LoginResponse.class);
 
-
-            Log.d("toto", String.valueOf(result.isSuccess()));
-            Log.d("toto", result.getUser().getFirstname());
-
-            //TODO: traiter la reponse ... connard
-
-            return true;
+            return result.isSuccess();
         }
 
         @Override
@@ -198,10 +192,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(false);
 
             if (success) {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
                 finish();
             } else {
+                mUsernameView.setError(getString(R.string.error_invalid_username));
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                mUsernameView.requestFocus();
             }
         }
 
