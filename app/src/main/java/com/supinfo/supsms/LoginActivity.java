@@ -20,6 +20,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.supinfo.supsms.entity.User;
+import com.supinfo.supsms.response.LoginResponse;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -171,15 +174,18 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            Log.d("debug", "evenmt 1");
-
             List<NameValuePair> parameters = new ArrayList<>(3);
             parameters.add(new BasicNameValuePair("action", "login"));
             parameters.add(new BasicNameValuePair("login", mUsername));
             parameters.add(new BasicNameValuePair("password", mPassword));
 
             RequestSender requestSender = new RequestSender();
-            Object result = requestSender.sendRequest(parameters);
+
+            LoginResponse result = requestSender.sendRequest(parameters, LoginResponse.class);
+
+
+            Log.d("toto", String.valueOf(result.isSuccess()));
+            Log.d("toto", result.getUser().getFirstname());
 
             //TODO: traiter la reponse ... connard
 

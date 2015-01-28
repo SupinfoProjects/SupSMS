@@ -21,7 +21,7 @@ import java.util.List;
 
 public class RequestSender {
 
-    public Object sendRequest(List<NameValuePair> parameters) {
+    public <T> T sendRequest(List<NameValuePair> parameters, Class<T> cls) {
 
         try {
             String URL = "http://91.121.105.200/API/";
@@ -41,7 +41,7 @@ public class RequestSender {
                 out.close();
 
                 Gson gson = new Gson();
-                return gson.fromJson(responseString, Object.class);
+                return gson.fromJson(responseString, cls);
 
             } else {
                 //Closes the connection.
