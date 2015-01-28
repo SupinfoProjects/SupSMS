@@ -40,7 +40,6 @@ public class RequestSender {
 
                 Gson gson = new Gson();
                 return gson.fromJson(responseString, cls);
-
             } else {
                 // Close the connection
                 response.getEntity().getContent().close();

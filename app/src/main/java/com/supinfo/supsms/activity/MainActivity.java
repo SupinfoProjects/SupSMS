@@ -169,11 +169,33 @@ public class MainActivity extends Activity implements LoaderCallbacks<Cursor> {
                         contact.setNumbers(numbers);
                     }
 
+                    // for each email
+                    List<String> emails = new ArrayList<>();
+
+                    Cursor emailCursor = getContentResolver().query(
+                        ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                        null,
+                        ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
+                        new String[] { contactsCursor.getString(idIndex) },
+                        null
+                    );
+
+                    int emailIndex = emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA);
+
+                    while (emailCursor.moveToNext()) {
+                        emails.add(emailCursor.getString(emailIndex));
+                    }
+
+                    emailCursor.close();
+                    contact.setEmails(emails);
+
+                    // add the contact
                     contacts.add(contact);
                 }
 
                 contactsCursor.close();
 
+                // call the API
                 List<NameValuePair> parameters = new ArrayList<>(4);
                 Gson gson = new Gson();
 
