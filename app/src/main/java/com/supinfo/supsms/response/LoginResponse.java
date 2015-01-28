@@ -2,17 +2,9 @@ package com.supinfo.supsms.response;
 
 import com.supinfo.supsms.entity.User;
 
-public class LoginResponse {
-    private boolean success;
+@SuppressWarnings("UnusedDeclaration")
+public class LoginResponse extends Response {
     private User user;
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
 
     public User getUser() {
         return user;

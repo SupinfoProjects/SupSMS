@@ -19,12 +19,12 @@ import java.util.List;
 
 public class RequestSender {
 
-    public <T> T sendRequest(List<NameValuePair> parameters, Class<T> cls) {
+    private static final String URL = "http://91.121.105.200/API/";
+
+    public static <T> T sendRequest(List<NameValuePair> parameters, Class<T> cls) {
 
         try {
-            String URL = "http://91.121.105.200/API/";
-
-            // Create a new HttpClient and Post Header
+            // Create a new client
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost(URL);
 
@@ -42,7 +42,7 @@ public class RequestSender {
                 return gson.fromJson(responseString, cls);
 
             } else {
-                //Closes the connection.
+                // Close the connection
                 response.getEntity().getContent().close();
                 throw new IOException(statusLine.getReasonPhrase());
             }

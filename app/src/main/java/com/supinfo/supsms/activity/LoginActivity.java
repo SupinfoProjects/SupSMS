@@ -21,8 +21,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.supinfo.supsms.R;
-import com.supinfo.supsms.tools.RequestSender;
 import com.supinfo.supsms.response.LoginResponse;
+import com.supinfo.supsms.tools.Properties;
+import com.supinfo.supsms.tools.RequestSender;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -180,8 +181,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             parameters.add(new BasicNameValuePair("login", mUsername));
             parameters.add(new BasicNameValuePair("password", mPassword));
 
-            RequestSender requestSender = new RequestSender();
-            LoginResponse result = requestSender.sendRequest(parameters, LoginResponse.class);
+            LoginResponse result = RequestSender.sendRequest(parameters, LoginResponse.class);
+
+            if (result.isSuccess()) {
+                Properties.getInstance().setUser(result.getUser());
+            }
 
             return result.isSuccess();
         }

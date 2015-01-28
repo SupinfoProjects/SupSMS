@@ -1,8 +1,6 @@
 package com.supinfo.supsms.entity;
 
-/**
- * Created by nicolas on 28/01/15.
- */
+@SuppressWarnings("UnusedDeclaration")
 public class User {
 
     private int id;
