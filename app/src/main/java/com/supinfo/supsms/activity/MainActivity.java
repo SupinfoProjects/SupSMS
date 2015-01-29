@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -35,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class MainActivity extends ActionBarActivity implements LoaderCallbacks<Cursor> {
+public class MainActivity extends BaseActivity implements LoaderCallbacks<Cursor> {
 
     private BackupContactsTask mBackupContactsTask = null;
     private BackupMessagesTask mBackupMessagesTask = null;
@@ -48,6 +47,7 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        checkUser();
 
         mProgressView = findViewById(R.id.menu_progress);
         mMainView = findViewById(R.id.menu);
@@ -84,9 +84,15 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openLoginActivity();
+                logout();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkUser();
     }
 
     @Override
@@ -113,7 +119,8 @@ public class MainActivity extends ActionBarActivity implements LoaderCallbacks<C
         mBackupMessagesTask.execute((Void) null);
     }
 
-    private void openLoginActivity() {
+    private void logout() {
+        Properties.getInstance().setUser(null); // remove the user
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
     }
